@@ -4,7 +4,7 @@ from discussion import replay_discussion
 from boot_mark import prase
 
 # 获取环境变量中的事件数据文件路径
-token = os.getenv('GITHUB_TOKEN')
+token = os.getenv('TOKEN')
 event_path = os.getenv('GITHUB_EVENT_PATH')
 
 # 读取事件数据文件

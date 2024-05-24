@@ -33,4 +33,4 @@ jobs:
     - name: Auto reply
       run: python  manage_tools/auto_reply.py
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TOKEN: ${{ secrets.TOKEN }}
