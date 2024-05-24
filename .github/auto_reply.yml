@@ -1,0 +1,36 @@
+name: Auto Reply to Discussions
+
+on:
+  discussion:
+    types: [created]
+
+jobs:
+  auto-reply:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Cache Python dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/manage_tools/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f manage_tools/requirements.txt ]; then pip install -r manage_tools/requirements.txt; fi
+
+    - name: Auto reply
+      run: python  manage_tools/auto_reply.py
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
