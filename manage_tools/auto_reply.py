@@ -3,6 +3,8 @@ import json
 from discussion import replay_discussion
 from boot_mark import prase
 
+def 
+
 # 获取环境变量中的事件数据文件路径
 token = os.getenv('TOKEN')
 event_path = os.getenv('GITHUB_EVENT_PATH')
@@ -25,7 +27,7 @@ print(event_data['discussion']['number'])  # 打印讨论编号
 marks = prase(event_data['discussion']['body'])
 print(marks)  # 打印解析结果
 # 生成具体的标签
-replay_content = (f"非常感谢您的贡献。\n\n以下是您的资源导入链接\n\t[一键导入：](yuedu://booksource/importonline?src={marks['rawlink']})\n\t[下载json]({marks['rawlink']})")
+replay_content = (f"非常感谢您的贡献。\n\n以下是您的资源导入链接\n\t一键导入：yuedu://booksource/importonline?src={marks['rawlink']}\n\t[下载json]({marks['rawlink']})")
 
 # 使用GitHub API获取讨论
 replay_discussion(token, discussion_number, replay_content)
