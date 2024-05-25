@@ -18,17 +18,7 @@ def get_discussion_id(token, number):
     return response.json()['data']['repository']['discussion']['id']
 
 
-def replay_discussion(token, discussion_number, content):
-    # headers = {'Authorization': f'token {token}', 'Accept': 'application/vnd.github.biscayne-preview+json'}
-    # data = {
-    #     'body': content
-    # }
-    # response = requests.post(
-    #     f'https://api.github.com/repos/2061360308/legado/discussions/{discussion_number}/comments',
-    #     headers=headers,
-    #     json=data
-    # )
-    # print(response.json())
+def replay_discussion(token, discussion_number, content, discussion_id=None):
     headers = {"Authorization": f"Bearer {token}"}
     query = """
         mutation($input: AddDiscussionCommentInput!) {
@@ -51,6 +41,24 @@ def replay_discussion(token, discussion_number, content):
     #     headers=headers
     # )
     # print(response.json())
+
+
+def update_discussion(token, discussion_id, new_body):
+    headers = {
+        'Authorization': f'bearer {token}',
+        'Content-Type': 'application/json',
+    }
+    data = {
+        'query': '''
+                mutation {
+                  updateDiscussion(input: {discussionId: "%s", body: "%s"}) {
+                    clientMutationId
+                  }
+                }
+            ''' % (get_discussion_id(token, discussion_id), new_body),
+    }
+    response = requests.post('https://api.github.com/graphql', headers=headers, json=data)
+    return response.json()
 
 
 if __name__ == '__main__':

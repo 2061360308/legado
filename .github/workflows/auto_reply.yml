@@ -31,6 +31,6 @@ jobs:
         if [ -f manage_tools/requirements.txt ]; then pip install -r manage_tools/requirements.txt; fi
 
     - name: Auto reply
-      run: python  manage_tools/auto_reply.py
+      run: python  manage_tools/bot.py
       env:
         TOKEN: ${{ secrets.TOKEN }}

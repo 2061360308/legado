@@ -1,7 +1,11 @@
 import base64
+import os
 from io import BytesIO
 
 import qrcode
+import requests
+
+from manage_tools.discussion import get_discussion_id
 
 
 def create_qr(data: str):
@@ -31,8 +35,23 @@ def create_qr(data: str):
     return img_str
 
 
-if __name__ == '__main__':
-    a = create_qr(
-        "https://gist.githubusercontent.com/2061360308/5984645ef963ea2567777d3f144af2b2/raw/bb021c1e10e555e7aeab78495832223dc5fa91be/test.json")
+def update_discussion(token, discussion_number, new_body):
+    headers = {
+        'Authorization': f'bearer {token}',
+        'Content-Type': 'application/json',
+    }
+    data = {
+        'query': '''
+                mutation {
+                  updateDiscussion(input: {discussionId: "%s", body: "%s"}) {
+                    clientMutationId
+                  }
+                }
+            ''' % (get_discussion_id(token, discussion_number), new_body),
+    }
+    response = requests.post('https://api.github.com/graphql', headers=headers, json=data)
+    return response.json()
 
-    print(a)
+
+if __name__ == '__main__':
+    print(update_discussion(os.getenv('GITHUB_TOKEN'), 7, "这是api修改后的内容"))
