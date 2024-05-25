@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>qrcode</title>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <style>
+        #qrcode {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+<div id="qrcode"></div>
+<script>
+    // 获取查询参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get('rawlink');
+
+    // 创建二维码
+    const qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: myParam,
+        width: 128,
+        height: 128
+    });
+</script>
+</body>
+</html>

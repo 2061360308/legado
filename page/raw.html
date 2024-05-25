@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>书源导入</title>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        #card {
+            background: white;
+            border-radius: 2px;
+            display: flex;
+            flex-direction: column; /* 设置主轴的方向为从上到下 */
+            /*height: 300px;*/
+            margin: 1rem;
+            position: relative;
+            /*width: 300px;*/
+            box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+        }
+
+        .title {
+            text-align: center;
+            padding-top: 5px;
+        }
+
+        #rawlink {
+            display: flex;
+            /*justify-content: center;*/
+            /* align-items: center; */
+            padding: 10px;
+            overflow-x: auto;
+            max-width: 460px;
+        }
+
+        #link {
+            white-space: nowrap; /* 防止文本自动换行 */
+            margin-left: 10px; /* 在链接和按钮之间添加一些空间 */
+        }
+
+        .qr-box {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+
+        #buttons {
+            text-align: center;
+            padding: 10px;
+        }
+
+        #buttons button {
+            width: 100%;
+        }
+
+        button {
+            margin: 5px;
+            min-width: 80px;
+            background-color: #4CAF50; /* 绿色背景 */
+            border: none; /* 无边框 */
+            color: white; /* 白色文字 */
+            padding: 10px;
+            text-align: center; /* 文字居中 */
+            text-decoration: none; /* 无下划线 */
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer; /* 鼠标悬停时变为手形图标 */
+            border-radius: 4px; /* 圆角边框 */
+        }
+    </style>
+</head>
+<body>
+<div id="card">
+    <div class="link-box">
+        <div class="title">
+            <h2>网络导入</h2>
+        </div>
+        <div id="rawlink">
+            <button onclick="copyLink()">复制</button>
+            <p id="link"></p>
+        </div>
+        <div id="buttons">
+            <button id="download" onclick="downloadLink()">下载json文件</button>
+            <button onclick="importLink()">3.x一键导入</button>
+        </div>
+    </div>
+    <div class="qr-box">
+        <div class="title">
+            <h2 title="打开「阅读」APP点击右下角的 [我的] 按钮 - [书源管理] (最下方第一张图)，这时候再点击右上角的 [三圆点] 按钮 - [二维码导入] (最下方第二张图) - 然后手机扫描下方二维码即可即可.">
+                二维码导入</h2>
+        </div>
+        <div id="qrcode"></div>
+    </div>
+</div>
+<script>
+    // 获取查询参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawlink = urlParams.get('rawlink');
+
+    if (rawlink === null) {
+        // 如果没有找到查询参数，显示一个 404 错误
+        document.body.innerHTML = `
+        <div style="
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: #f0f0f0;
+        ">
+            <h1 style="
+                font-size: 72px;
+                margin-bottom: 40px;
+            ">404</h1>
+            <p style="
+                font-size: 24px;
+            ">抱歉，我们找不到您要的内容。</p>
+        </div>
+    `;
+    }
+
+    // 显示 rawlink
+    document.getElementById('link').textContent = rawlink;
+
+    // 创建二维码
+    const qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: rawlink,
+        width: 128,
+        height: 128
+    });
+
+    // 复制 rawlink
+    function copyLink() {
+        navigator.clipboard.writeText(rawlink).then(function () {
+            /* clipboard successfully set */
+            alert('复制成功！');
+        }, function () {
+            /* clipboard write failed */
+            alert('复制失败，请手动复制。');
+        });
+    }
+
+    function downloadLink() {
+        const downloadButton = document.getElementById('download');
+        fetch(rawlink)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'content.json';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            })
+            .catch(() => alert('下载失败。'))
+            .finally(() => {
+                // 启用下载按钮
+                downloadButton.disabled = false;
+                alert('下载成功！');
+            });
+    }
+
+    function importLink() {
+        window.location.href = 'yuedu://booksource/importonline?src=' + encodeURIComponent(rawlink);
+    }
+</script>
+</body>
+</html>
